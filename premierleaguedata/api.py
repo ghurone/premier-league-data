@@ -1,16 +1,16 @@
 '''
     Created by Erick Ghuron
 '''
-
-import requests
 import json
 
+import requests
 
-def req_to_json(req: requests.Response):
+
+def req_to_json(req: requests.Response) -> dict:
     if req.status_code == 200:
         return json.loads(req.text)
     else:
-        return ValueError(f'Error! status code:<{req.status_code}>')
+        raise ValueError(f'Error! status code:<{req.status_code}>')
     
 
 class PremierLeagueAPI:
@@ -23,7 +23,7 @@ class PremierLeagueAPI:
         
         self.root_url = 'https://footballapi.pulselive.com/football/'
     
-    def api_call(self, path:str, qparams:dict = {}):
+    def __api_call(self, path:str, qparams:dict = {}):
         url = self.root_url + path
         
         res = requests.get(url, headers=self.header, params= qparams)
@@ -40,7 +40,7 @@ class PremierLeagueAPI:
             'live': live
         }
 
-        return self.api_call('standings', payload)
+        return self.__api_call('standings', payload)
 
     def competitions(self, page:str = '0', pageSize:str = '1000', detail:str = '2') -> dict:
         
@@ -50,9 +50,9 @@ class PremierLeagueAPI:
             'detail': detail
         }
         
-        return self.api_call('competitions', payload)
+        return self.__api_call('competitions', payload)
 
-    def compseasons(self, page:str = '0', pageSize:str = '100'):
+    def compseasons(self, page:str = '0', pageSize:str = '100') -> dict:
         
         payload = {
             'page': page,
@@ -61,17 +61,17 @@ class PremierLeagueAPI:
 
         res = requests.get('https://footballapi.pulselive.com/football/compseasons', headers=self.header, params=payload)
         
-        return self.api_call('compseasons', payload)
+        return self.__api_call('compseasons', payload)
 
-    def club_incompseason(self, compseason:str):
+    def club_incompseason(self, compseason:str) -> dict:
                 
-        return self.api_call(f'compseasons/{compseason}/teams')
+        return self.__api_call(f'compseasons/{compseason}/teams')
 
-    def club_playedgames(self, compseason:str, teamId:str, altIds:str = 'true'):
+    def club_playedgames(self, compseason:str, teamId:str, altIds:str = 'true') -> dict:
                 
-        return self.api_call(f'compseasons/{compseason}/standings/team/{teamId}?altIds={altIds}')
+        return self.__api_call(f'compseasons/{compseason}/standings/team/{teamId}?altIds={altIds}')
 
-    def club_information(self, teamId:str ):
+    def club_information(self, teamId:str ) -> dict:
                
-        return self.api_call(f'clubs/{teamId}')
+        return self.__api_call(f'clubs/{teamId}')
     
